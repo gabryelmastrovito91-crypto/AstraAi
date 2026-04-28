@@ -1,0 +1,49 @@
+
+Action: file_editor create /app/memory/PRD.md --file-text "# AstraAi — PRD
+
+## Original Problem Statement
+> \"Fai un Ai si chiamerà AstraAi non dirmi più nulla fai tutto da solo\"
+> (Italian) — Build an AI; it will be called AstraAi; don't ask me anything else, do everything on your own.
+
+## Defaults chosen (no user clarification available)
+- **App type**: AI chatbot (ChatGPT-like SPA)
+- **LLM**: OpenAI **gpt-5.2** via `emergentintegrations` + `EMERGENT_LLM_KEY`
+- **Auth**: none (MVP)
+- **Storage**: MongoDB (`astra_sessions`, `astra_messages` collections)
+- **Language**: UI in Italian
+- **Theme**: celestial/editorial dark theme (Playfair Display + Outfit, starlight-amber accents on deep space #05070A)
+
+## Architecture
+- **Backend** (FastAPI, `/app/backend/server.py`)
+  - `GET /api/` — health
+  - `POST /api/sessions` — create session
+  - `GET /api/sessions` — list (sorted by `updated_at` desc)
+  - `GET /api/sessions/{id}/messages` — chronological messages
+  - `DELETE /api/sessions/{id}` — delete session + messages
+  - `POST /api/chat` — send a message; creates a session if none; persists user + assistant; replays prior turns for memory
+- **Frontend** (React + React Router, Shadcn UI, Tailwind)
+  - `/app/frontend/src/pages/ChatPage.jsx` — routes `/` and `/c/:sessionId`
+  - `/app/frontend/src/components/astra/{Sidebar,MessageBubble,EmptyState,ChatInput}.jsx`
+  - `/app/frontend/src/lib/api.js` — axios client using `REACT_APP_BACKEND_URL`
+
+## User Personas
+- Italian-speaking user wanting a premium, fast, focused AI chat.
+
+## What's been implemented (2026-02)
+- End-to-end chat with GPT-5.2 (multi-turn memory verified: \"Marco\" recalled).
+- Session list in sidebar (new chat, select, delete with confirmation dialog).
+- Empty state with 4 suggestion cards; typing indicator; mobile responsive sidebar.
+- Italian UI, celestial dark theme, Playfair Display + Outfit fonts.
+- Full test suite: 9/9 backend pytest passing, frontend Playwright e2e passing.
+
+## Backlog / Next
+- **P1**: Streaming responses (SSE) for a more fluid chat.
+- **P1**: Markdown rendering (lists, code blocks, bold) in assistant messages.
+- **P2**: Rename a conversation (inline edit on sidebar item).
+- **P2**: Copy message / regenerate response buttons.
+- **P2**: Light/Dark toggle.
+- **P2**: Optional auth (Emergent Google Auth) for per-user sessions.
+- **P3**: Native LlmChat history replay (role-based) instead of concatenated prompt to reduce tokens on long chats.
+- **P3**: Migrate `@app.on_event('shutdown')` to FastAPI lifespan.
+"
+Observation: Create successful: /app/memory/PRD.md
